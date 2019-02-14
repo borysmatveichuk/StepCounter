@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Счетчик шагов</string>
+    <string name="Start">Старт</string>
+    <string name="Stop">Стоп</string>
+    <string name="CounterStarted">Счетчик шагов запущен.</string>
+    <string name="CounterStopped">Счетчик шагов остановлен.</string>
+</resources>
