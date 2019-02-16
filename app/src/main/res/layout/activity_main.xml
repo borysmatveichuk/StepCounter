@@ -29,7 +29,7 @@
             android:id="@+id/stepsCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Steps: 0"
+            tools:text="@string/Steps"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

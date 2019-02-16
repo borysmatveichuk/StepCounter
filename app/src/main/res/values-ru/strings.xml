@@ -4,4 +4,8 @@
     <string name="Stop">Стоп</string>
     <string name="CounterStarted">Счетчик шагов запущен.</string>
     <string name="CounterStopped">Счетчик шагов остановлен.</string>
+    <string name="ErrorNoStepDetector">Извините, но в вашей системе отсутствует счетчик шагов.</string>
+    <string name="ErrorUnknown">Неизвестная ошибка.</string>
+    <string name="Notifications">Уведомления.</string>
+    <string name="Steps">Шагов: %d (%.3f Km)</string>
 </resources>

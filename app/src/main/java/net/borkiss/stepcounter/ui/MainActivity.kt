@@ -1,19 +1,17 @@
 package net.borkiss.stepcounter.ui
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import net.borkiss.stepcounter.R
-import net.borkiss.stepcounter.service.EXTRA_STEP_COUNT
-import net.borkiss.stepcounter.service.BROADCAST_STEP
-import net.borkiss.stepcounter.service.StepCountService
+import net.borkiss.stepcounter.service.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,14 +25,18 @@ class MainActivity : AppCompatActivity() {
             steps?.let {
                 setSteps(it)
             }
+
+            val error: Int? = intent?.getIntExtra(EXTRA_ERROR_CODE, 0)
+            error?.let {
+                if (it != 0) showError(it)
+            }
         }
     }
 
     private val intentFilter = IntentFilter(BROADCAST_STEP)
 
-    @SuppressLint("SetTextI18n")
     private fun setSteps(steps: Long) {
-        stepCount.text = "Steps: $steps (${getDistanceRun(steps)}) Km"
+        stepCount.text = getString(R.string.Steps, steps, getDistanceRun(steps))
     }
 
     private fun getDistanceRun(steps: Long): Float {
@@ -49,13 +51,15 @@ class MainActivity : AppCompatActivity() {
         stopButton = findViewById(R.id.stopButton)
 
         startButton.setOnClickListener {
-            startService(Intent(this, StepCountService::class.java ))
-            Toast.makeText(this, R.string.CounterStarted, Toast.LENGTH_SHORT).show()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(Intent(this, StepCountService::class.java))
+            } else {
+                startService(Intent(this, StepCountService::class.java))
+            }
         }
 
         stopButton.setOnClickListener {
-            stopService(Intent(this, StepCountService::class.java ))
-            Toast.makeText(this, R.string.CounterStopped, Toast.LENGTH_SHORT).show()
+            stopService(Intent(this, StepCountService::class.java))
         }
     }
 
@@ -67,5 +71,14 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(broadcastReceiver)
+    }
+
+    private fun showError(errorCode: Int) {
+        val errorMsg = ERRORS_MESSAGES[errorCode]
+        Toast.makeText(
+            this@MainActivity,
+            errorMsg!!,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
