@@ -13,8 +13,11 @@ import androidx.core.app.NotificationCompat
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.room.Room
 import net.borkiss.stepcounter.R
+import net.borkiss.stepcounter.db.AppDatabase
 
 
 class StepCountService: Service() {
@@ -22,6 +25,7 @@ class StepCountService: Service() {
     private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private var steps: Long = 0
+
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -43,6 +47,10 @@ class StepCountService: Service() {
 
     override fun onCreate() {
         super.onCreate()
+
+//        val db = Room.databaseBuilder(this,
+//            AppDatabase::class.java, "steps-db"
+//        ).build()
 
         if (!hasStepDetector()) {
             sendError(ERROR_NO_STEP_DETECTOR)
