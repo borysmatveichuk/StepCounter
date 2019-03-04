@@ -7,5 +7,5 @@
     <string name="ErrorNoStepDetector">Извините, но в вашей системе отсутствует счетчик шагов.</string>
     <string name="ErrorUnknown">Неизвестная ошибка.</string>
     <string name="Notifications">Уведомления.</string>
-    <string name="Steps">Шагов: %d (%.3f Km)</string>
+    <string name="Steps">Шагов: %d (%.3f Км)</string>
 </resources>
