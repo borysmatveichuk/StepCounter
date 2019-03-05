@@ -1,4 +1,4 @@
-package net.borkiss.stepcounter.db
+package net.borkiss.stepcounter.db.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,6 +8,6 @@ import java.util.*
 @Entity
 data class Steps (
     @PrimaryKey var id: Int,
-    @ColumnInfo var count: Int
-    // @ColumnInfo var date: Calendar
+    @ColumnInfo var count: Int,
+    @ColumnInfo var date: Date
 )
