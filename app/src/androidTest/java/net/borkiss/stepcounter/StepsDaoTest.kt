@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 /**
  * Test the implementation of [StepsDao]
@@ -41,7 +42,7 @@ class StepsDaoTest {
 
     @Test
     fun getStepsWhenStepsNotInserted() {
-        database.stepsDao().getStepsById(123)
+        database.stepsDao().getStepsByDate(Date())
             .test()
             .assertNoValues()
     }
@@ -50,42 +51,42 @@ class StepsDaoTest {
     fun insertAndGetSteps() {
         database.stepsDao().insertSteps(STEP_RECORD).blockingAwait()
 
-        database.stepsDao().getStepsById(STEP_RECORD.id)
+        database.stepsDao().getStepsByDate(STEP_RECORD.date)
             .test()
             .assertValue {
-                it.id == STEP_RECORD.id
+                it.date == STEP_RECORD.date
                         && it.count == STEP_RECORD.count
-                        && it.date == STEP_RECORD.date
             }
+
     }
 
     @Test
     fun updateAndGetSteps() {
         database.stepsDao().insertSteps(STEP_RECORD).blockingAwait()
 
-        val updatedSteps = Steps(STEP_RECORD.id, 1000, STEP_RECORD.date)
+        val updatedSteps = Steps(STEP_RECORD.date, 1000)
         database.stepsDao().insertSteps(updatedSteps).blockingAwait()
 
-        database.stepsDao().getStepsById(STEP_RECORD.id)
+        database.stepsDao().getStepsByDate(STEP_RECORD.date)
             .test()
             .assertValue {
-                it.id == updatedSteps.id
+                it.date == updatedSteps.date
                         && it.count == updatedSteps.count
-                        && it.date == updatedSteps.date
+
             }
     }
 
     @Test
-    fun deleteAndGetUser() {
+    fun deleteAndGetSteps() {
         database.stepsDao().insertSteps(STEP_RECORD).blockingAwait()
 
         database.stepsDao().deleteAllSteps()
-        database.stepsDao().getStepsById(STEP_RECORD.id)
+        database.stepsDao().getStepsByDate(STEP_RECORD.date)
             .test()
             .assertNoValues()
     }
 
     companion object {
-        private val STEP_RECORD = Steps(0, 500, DateConverter.toDate("2015-05-16")!!)
+        private val STEP_RECORD = Steps(DateConverter.toDate("2015-05-16")!!, 500)
     }
 }
