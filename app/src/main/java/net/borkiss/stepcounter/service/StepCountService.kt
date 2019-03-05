@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.room.Room
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.AppDatabase
+import org.koin.android.ext.android.inject
 
 
 class StepCountService: Service() {
@@ -25,6 +26,8 @@ class StepCountService: Service() {
     private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private var steps: Long = 0
+
+    private val db: AppDatabase by inject()
 
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
@@ -47,10 +50,6 @@ class StepCountService: Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-//        val db = Room.databaseBuilder(this,
-//            AppDatabase::class.java, "steps-db"
-//        ).build()
 
         if (!hasStepDetector()) {
             sendError(ERROR_NO_STEP_DETECTOR)
@@ -78,6 +77,7 @@ class StepCountService: Service() {
         sensorManager?.registerListener(sensorEventListener, stepSensor, SensorManager.SENSOR_DELAY_FASTEST)
 
         Toast.makeText(this, R.string.CounterStarted, Toast.LENGTH_SHORT).show()
+        Log.d("StepCountService", db.stepsDao().getAll().toString())
     }
 
 

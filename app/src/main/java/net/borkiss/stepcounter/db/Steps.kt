@@ -8,6 +8,6 @@ import java.util.*
 @Entity
 data class Steps (
     @PrimaryKey var id: Int,
-    @ColumnInfo var count: Int,
-    @ColumnInfo var date: Calendar
+    @ColumnInfo var count: Int
+    // @ColumnInfo var date: Calendar
 )
