@@ -1,5 +1,8 @@
 package net.borkiss.stepcounter.service
 
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -8,26 +11,24 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import android.app.NotificationManager
-import android.app.NotificationChannel
 import android.os.Build
-import android.util.Log
+import android.os.IBinder
 import android.widget.Toast
-import androidx.room.Room
+import androidx.core.app.NotificationCompat
 import net.borkiss.stepcounter.R
-import net.borkiss.stepcounter.db.AppDatabase
+import net.borkiss.stepcounter.db.entity.Steps
+import net.borkiss.stepcounter.db.repository.StepsRepository
 import org.koin.android.ext.android.inject
+import java.util.*
 
 
-class StepCountService: Service() {
+class StepCountService : Service() {
 
     private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private var steps: Long = 0
 
-    private val db: AppDatabase by inject()
+    private val stepsRepository: StepsRepository by inject()
 
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
@@ -39,9 +40,18 @@ class StepCountService: Service() {
 
             if (sensor!!.type == Sensor.TYPE_STEP_DETECTOR) {
                 steps++
+                saveSteps(steps)
                 sendSteps(steps)
             }
         }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun saveSteps(steps: Long) {
+        stepsRepository.addSteps(Steps(Date(), steps.toInt()))
+            .subscribe {
+                Toast.makeText(this, "Saved $steps", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -77,7 +87,6 @@ class StepCountService: Service() {
         sensorManager?.registerListener(sensorEventListener, stepSensor, SensorManager.SENSOR_DELAY_FASTEST)
 
         Toast.makeText(this, R.string.CounterStarted, Toast.LENGTH_SHORT).show()
-        Log.d("StepCountService", db.stepsDao().getAll().toString())
     }
 
 
@@ -106,7 +115,8 @@ class StepCountService: Service() {
     private fun hasStepDetector(): Boolean {
         with(packageManager) {
             if (!hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_DETECTOR)
-                || !hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)) {
+                || !hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)
+            ) {
                 return false
             }
         }
