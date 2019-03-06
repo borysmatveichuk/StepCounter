@@ -1,39 +1,31 @@
 package net.borkiss.stepcounter.ui
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import net.borkiss.stepcounter.R
-import net.borkiss.stepcounter.service.*
+import net.borkiss.stepcounter.db.repository.StepsRepository
+import net.borkiss.stepcounter.ext.hasStepDetector
+import net.borkiss.stepcounter.service.ERRORS_MESSAGES
+import net.borkiss.stepcounter.service.ERROR_NO_STEP_DETECTOR
+import net.borkiss.stepcounter.service.StepCountService
+import org.koin.android.ext.android.inject
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var stepCount: TextView
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
+    private val disposables = CompositeDisposable()
 
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val steps: Long? = intent?.getLongExtra(EXTRA_STEP_COUNT, 0)
-            steps?.let {
-                setSteps(it)
-            }
-
-            val error: Int? = intent?.getIntExtra(EXTRA_ERROR_CODE, 0)
-            error?.let {
-                if (it != 0) showError(it)
-            }
-        }
-    }
-
-    private val intentFilter = IntentFilter(BROADCAST_STEP)
+    private val stepsRepository: StepsRepository by inject()
 
     private fun setSteps(steps: Long) {
         stepCount.text = getString(R.string.Steps, steps, getDistanceRun(steps))
@@ -51,6 +43,11 @@ class MainActivity : AppCompatActivity() {
         stopButton = findViewById(R.id.stopButton)
 
         startButton.setOnClickListener {
+            if (!hasStepDetector()) {
+                showError(ERROR_NO_STEP_DETECTOR)
+                return@setOnClickListener
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(Intent(this, StepCountService::class.java))
             } else {
@@ -65,12 +62,24 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        registerReceiver(broadcastReceiver, intentFilter)
+        disposables.add(
+            stepsRepository.getStepsByDateFlow(Date())
+                .map {
+                    it.count.toLong()
+                }
+                .subscribe({
+                    setSteps(it)
+                }, {
+                    setSteps(0)
+                })
+        )
+        Toast.makeText(this, "Subscribed", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver(broadcastReceiver)
+        disposables.dispose()
+        Toast.makeText(this, "Unsubscribed", Toast.LENGTH_SHORT).show()
     }
 
     private fun showError(errorCode: Int) {

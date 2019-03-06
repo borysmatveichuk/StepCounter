@@ -1,6 +1,7 @@
 package net.borkiss.stepcounter.db.repository
 
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -9,6 +10,13 @@ import net.borkiss.stepcounter.db.entity.Steps
 import java.util.*
 
 class StepsRepositoryImpl(private val stepsDao: StepsDao) : StepsRepository {
+
+    override fun getStepsByDateFlow(date: Date): Flowable<Steps> {
+        return stepsDao.getStepsByDate(date)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     override fun getStepsByDate(date: Date): Single<Steps> {
         return stepsDao.getStepsByDate(date)
             .firstOrError()

@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -49,7 +48,6 @@ class StepCountService : Service() {
                 steps++
                 Log.d(TAG, "TYPE_STEP_DETECTOR ${Date(timeInMillis)} ${event.values[0]}")
                 saveSteps(timeInMillis, steps)
-                sendSteps(steps)
             }
         }
     }
@@ -66,11 +64,6 @@ class StepCountService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-        if (!hasStepDetector()) {
-            sendError(ERROR_NO_STEP_DETECTOR)
-            return
-        }
 
         if (Build.VERSION.SDK_INT >= 26) {
             val channelId = StepCountService::class.java.simpleName
@@ -102,9 +95,10 @@ class StepCountService : Service() {
     private fun initSteps() {
         stepsRepository.getStepsByDate(Date())
             .map {
-                steps = it.count.toLong()
+                it.count.toLong()
             }
             .subscribe({
+                steps = it
                 Log.d(TAG, "Steps for ${Date()} $steps")
             },{
                 Log.d(TAG, "No data yet for ${Date()}")
@@ -128,28 +122,5 @@ class StepCountService : Service() {
             currentDay = newDay
             steps = 0
         }
-    }
-
-    private fun sendSteps(steps: Long) {
-        val intent = Intent(BROADCAST_STEP)
-        intent.putExtra(EXTRA_STEP_COUNT, steps)
-        sendBroadcast(intent)
-    }
-
-    private fun sendError(errorCode: Int) {
-        val intent = Intent(BROADCAST_STEP)
-        intent.putExtra(EXTRA_ERROR_CODE, errorCode)
-        sendBroadcast(intent)
-    }
-
-    private fun hasStepDetector(): Boolean {
-        with(packageManager) {
-            if (!hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_DETECTOR)
-                || !hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)
-            ) {
-                return false
-            }
-        }
-        return true
     }
 }
