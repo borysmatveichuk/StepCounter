@@ -43,6 +43,8 @@ dependencies {
     implementation "org.koin:koin-androidx-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
+    implementation 'joda-time:joda-time:2.10.1'
+
     testImplementation "org.koin:koin-test:$koin_version"
 
     testImplementation 'junit:junit:4.12'

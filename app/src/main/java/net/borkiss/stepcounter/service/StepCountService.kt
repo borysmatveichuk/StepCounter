@@ -13,20 +13,24 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.entity.Steps
 import net.borkiss.stepcounter.db.repository.StepsRepository
+import org.joda.time.DateTime
 import org.koin.android.ext.android.inject
 import java.util.*
 
 
 class StepCountService : Service() {
+    private val TAG = StepCountService::class.java.simpleName
 
     private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private var steps: Long = 0
+    private var currentDay: Int = DateTime.now().dayOfYear
 
     private val stepsRepository: StepsRepository by inject()
 
@@ -39,19 +43,21 @@ class StepCountService : Service() {
             val sensor = event?.sensor
 
             if (sensor!!.type == Sensor.TYPE_STEP_DETECTOR) {
+                val timeInMillis = System.currentTimeMillis()
+                resetCurrentDayAndStepsIfNewDay(timeInMillis)
+
                 steps++
-                saveSteps(steps)
+                Log.d(TAG, "TYPE_STEP_DETECTOR ${Date(timeInMillis)} ${event.values[0]}")
+                saveSteps(timeInMillis, steps)
                 sendSteps(steps)
             }
         }
     }
 
     @SuppressLint("CheckResult")
-    private fun saveSteps(steps: Long) {
-        stepsRepository.addSteps(Steps(Date(), steps.toInt()))
-            .subscribe {
-                Toast.makeText(this, "Saved $steps", Toast.LENGTH_SHORT).show()
-            }
+    private fun saveSteps(timeInMillis: Long, steps: Long) {
+        val step = Steps(Date(timeInMillis), steps.toInt())
+        stepsRepository.addSteps(step).subscribe()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -82,11 +88,27 @@ class StepCountService : Service() {
 
             startForeground(1, notification)
         }
+
+        initSteps()
+
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         stepSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
         sensorManager?.registerListener(sensorEventListener, stepSensor, SensorManager.SENSOR_DELAY_FASTEST)
 
         Toast.makeText(this, R.string.CounterStarted, Toast.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("CheckResult")
+    private fun initSteps() {
+        stepsRepository.getStepsByDate(Date())
+            .map {
+                steps = it.count.toLong()
+            }
+            .subscribe({
+                Log.d(TAG, "Steps for ${Date()} $steps")
+            },{
+                Log.d(TAG, "No data yet for ${Date()}")
+            })
     }
 
 
@@ -98,6 +120,14 @@ class StepCountService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    private fun resetCurrentDayAndStepsIfNewDay(timeInMillis: Long) {
+        val newDay = DateTime(timeInMillis).dayOfYear
+        if (newDay != currentDay) {
+            currentDay = newDay
+            steps = 0
+        }
     }
 
     private fun sendSteps(steps: Long) {
@@ -120,7 +150,6 @@ class StepCountService : Service() {
                 return false
             }
         }
-
         return true
     }
 }

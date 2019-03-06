@@ -8,7 +8,7 @@ fun createDb(context: Context): AppDatabase {
     return Room.databaseBuilder(context,
             AppDatabase::class.java, "steps-db"
         )
-        .allowMainThreadQueries()
+        // .allowMainThreadQueries()
         .build()
 }
 
