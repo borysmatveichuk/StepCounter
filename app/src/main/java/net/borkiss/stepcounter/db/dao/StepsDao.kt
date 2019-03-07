@@ -12,7 +12,7 @@ import java.util.*
 @Dao
 interface StepsDao {
     @Query("SELECT * FROM Steps")
-    fun getAll(): List<Steps>
+    fun getAll(): Flowable<List<Steps>>
 
     @Query("SELECT * FROM Steps WHERE date = :date")
     fun getStepsByDate(date: Date): Flowable<Steps>

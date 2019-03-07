@@ -11,6 +11,12 @@ import java.util.*
 
 class StepsRepositoryImpl(private val stepsDao: StepsDao) : StepsRepository {
 
+    override fun getAllStepsFlow(): Flowable<List<Steps>> {
+        return stepsDao.getAll()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
     override fun getStepsByDateFlow(date: Date): Flowable<Steps> {
         return stepsDao.getStepsByDate(date)
             .subscribeOn(Schedulers.io())

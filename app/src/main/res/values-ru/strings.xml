@@ -3,6 +3,7 @@
     <string name="Start">Старт</string>
     <string name="Stop">Стоп</string>
     <string name="Stat">Стат.</string>
+    <string name="Statistics">Статистика</string>
     <string name="CounterStarted">Счетчик шагов запущен.</string>
     <string name="CounterStopped">Счетчик шагов остановлен.</string>
     <string name="ErrorNoStepDetector">Извините, но в вашей системе отсутствует счетчик шагов.</string>

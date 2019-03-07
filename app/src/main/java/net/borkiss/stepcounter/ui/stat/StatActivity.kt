@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import net.borkiss.stepcounter.R
 
 fun goToStat(context: Context) {
@@ -16,5 +17,28 @@ class StatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_stat)
+
+        val toolbar = supportActionBar
+        toolbar?.setDisplayHomeAsUpEnabled(true)
+        toolbar?.title = getString(R.string.Statistics)
+
+        val container = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (container == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, StatFragment.newInstance())
+                .commit()
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

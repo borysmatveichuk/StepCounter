@@ -10,4 +10,5 @@ interface StepsRepository {
     fun addSteps(steps: Steps): Completable
     fun getStepsByDate(date: Date): Single<Steps>
     fun getStepsByDateFlow(date: Date): Flowable<Steps>
+    fun getAllStepsFlow(): Flowable<List<Steps>>
 }
