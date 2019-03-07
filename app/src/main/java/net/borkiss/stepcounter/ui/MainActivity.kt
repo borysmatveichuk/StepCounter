@@ -14,6 +14,7 @@ import net.borkiss.stepcounter.ext.hasStepDetector
 import net.borkiss.stepcounter.service.ERRORS_MESSAGES
 import net.borkiss.stepcounter.service.ERROR_NO_STEP_DETECTOR
 import net.borkiss.stepcounter.service.StepCountService
+import net.borkiss.stepcounter.ui.stat.goToStat
 import org.koin.android.ext.android.inject
 import java.util.*
 
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var stepCount: TextView
     private lateinit var startButton: Button
     private lateinit var stopButton: Button
+    private lateinit var statButton: Button
+
     private val disposables = CompositeDisposable()
 
     private val stepsRepository: StepsRepository by inject()
@@ -35,12 +38,14 @@ class MainActivity : AppCompatActivity() {
         return (steps * 0.78).toFloat() / 1000.toFloat()
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         stepCount = findViewById(R.id.stepsCount)
         startButton = findViewById(R.id.startButton)
         stopButton = findViewById(R.id.stopButton)
+        statButton = findViewById(R.id.statButton)
 
         startButton.setOnClickListener {
             if (!hasStepDetector()) {
@@ -57,6 +62,10 @@ class MainActivity : AppCompatActivity() {
 
         stopButton.setOnClickListener {
             stopService(Intent(this, StepCountService::class.java))
+        }
+
+        statButton.setOnClickListener{
+            goToStat(this)
         }
     }
 

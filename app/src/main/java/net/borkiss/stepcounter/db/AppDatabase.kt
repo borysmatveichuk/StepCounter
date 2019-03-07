@@ -7,7 +7,7 @@ import net.borkiss.stepcounter.db.entity.Steps
 import net.borkiss.stepcounter.db.converter.DateConverter
 import net.borkiss.stepcounter.db.dao.StepsDao
 
-@Database(entities = [Steps::class], version = 1)
+@Database(entities = [Steps::class], version = 1, exportSchema = false)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun stepsDao(): StepsDao
