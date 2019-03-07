@@ -27,17 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var statButton: Button
 
     private val disposables = CompositeDisposable()
-
     private val stepsRepository: StepsRepository by inject()
-
-    private fun setSteps(steps: Long) {
-        stepCount.text = getString(R.string.Steps, steps, getDistanceRun(steps))
-    }
-
-    private fun getDistanceRun(steps: Long): Float {
-        return (steps * 0.78).toFloat() / 1000.toFloat()
-    }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,15 +70,22 @@ class MainActivity : AppCompatActivity() {
                     setSteps(it)
                 }, {
                     setSteps(0)
+                    Toast.makeText(this, "Error: ${it.localizedMessage}", Toast.LENGTH_SHORT).show()
                 })
         )
-        Toast.makeText(this, "Subscribed", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {
         super.onPause()
-        disposables.dispose()
-        Toast.makeText(this, "Unsubscribed", Toast.LENGTH_SHORT).show()
+        disposables.clear()
+    }
+
+    private fun setSteps(steps: Long) {
+        stepCount.text = getString(R.string.Steps, steps, getDistanceRun(steps))
+    }
+
+    private fun getDistanceRun(steps: Long): Float {
+        return (steps * 0.78).toFloat() / 1000.toFloat()
     }
 
     private fun showError(errorCode: Int) {
