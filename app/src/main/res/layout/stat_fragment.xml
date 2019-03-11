@@ -6,16 +6,23 @@
         android:layout_height="match_parent"
         tools:context=".ui.stat.StatFragment">
 
-    <TextView
-            android:id="@+id/results"
+    <!--<TextView-->
+            <!--android:id="@+id/results"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:textSize="20sp"-->
+            <!--android:textColor="@color/colorPrimaryDark"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:padding="16dp"-->
+            <!--android:lineSpacingExtra="8dp"-->
+            <!--android:gravity="center_horizontal"-->
+            <!--tools:text="2019-03-05 : 10000\n2019-03-06 : 10000\n2019-03-07 : 10000\n"/>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimaryDark"
-            android:layout_gravity="center_horizontal"
-            android:padding="16dp"
-            android:lineSpacingExtra="8dp"
-            android:gravity="center_horizontal"
-            tools:text="2019-03-05 : 10000\n2019-03-06 : 10000\n2019-03-07 : 10000\n"/>
+            tools:listitem="@layout/item_steps"
+            tools:visibility="visible" />
 
 </FrameLayout>

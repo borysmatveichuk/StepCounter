@@ -1,5 +1,6 @@
 package net.borkiss.stepcounter.db.repository
 
+import androidx.paging.DataSource
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -10,6 +11,10 @@ import net.borkiss.stepcounter.db.entity.Steps
 import java.util.*
 
 class StepsRepositoryImpl(private val stepsDao: StepsDao) : StepsRepository {
+
+    override fun getAllStepsPaged(): DataSource.Factory<Int, Steps> {
+        return stepsDao.getAllPaged()
+    }
 
     override fun getAllStepsFlow(): Flowable<List<Steps>> {
         return stepsDao.getAll()

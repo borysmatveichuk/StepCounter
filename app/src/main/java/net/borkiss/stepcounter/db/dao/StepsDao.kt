@@ -1,5 +1,7 @@
 package net.borkiss.stepcounter.db.dao
 
+import androidx.paging.DataSource
+import androidx.paging.PagedList
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -11,8 +13,11 @@ import java.util.*
 
 @Dao
 interface StepsDao {
-    @Query("SELECT * FROM Steps")
+    @Query("SELECT * FROM Steps ORDER BY date DESC")
     fun getAll(): Flowable<List<Steps>>
+
+    @Query("SELECT * FROM Steps ORDER BY date DESC")
+    fun getAllPaged(): DataSource.Factory<Int, Steps>
 
     @Query("SELECT * FROM Steps WHERE date = :date")
     fun getStepsByDate(date: Date): Flowable<Steps>

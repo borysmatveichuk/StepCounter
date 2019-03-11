@@ -1,5 +1,6 @@
 package net.borkiss.stepcounter.db.repository
 
+import androidx.paging.DataSource
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -11,4 +12,5 @@ interface StepsRepository {
     fun getStepsByDate(date: Date): Single<Steps>
     fun getStepsByDateFlow(date: Date): Flowable<Steps>
     fun getAllStepsFlow(): Flowable<List<Steps>>
+    fun getAllStepsPaged(): DataSource.Factory<Int, Steps>
 }
