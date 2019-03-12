@@ -3,6 +3,7 @@ package net.borkiss.stepcounter.service
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -15,9 +16,11 @@ import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.toBitmap
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.entity.Steps
 import net.borkiss.stepcounter.db.repository.StepsRepository
+import net.borkiss.stepcounter.ui.createMainIntent
 import org.joda.time.DateTime
 import org.koin.android.ext.android.inject
 import java.util.*
@@ -32,7 +35,6 @@ class StepCountService : Service() {
     private var currentDay: Int = DateTime.now().dayOfYear
 
     private val stepsRepository: StepsRepository by inject()
-
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -76,8 +78,18 @@ class StepCountService : Service() {
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
 
             val notification = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_walk)
+                .setLargeIcon(getDrawable(R.drawable.ic_good_mood)?.toBitmap())
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText("").build()
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        createMainIntent(this),
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
+                .build()
 
             startForeground(1, notification)
         }
@@ -100,7 +112,7 @@ class StepCountService : Service() {
             .subscribe({
                 steps = it
                 Log.d(TAG, "Steps for ${Date()} $steps")
-            },{
+            }, {
                 Log.d(TAG, "No data yet for ${Date()}")
             })
     }

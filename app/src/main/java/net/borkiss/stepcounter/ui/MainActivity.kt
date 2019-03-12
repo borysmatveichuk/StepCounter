@@ -1,5 +1,6 @@
 package net.borkiss.stepcounter.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +19,16 @@ import net.borkiss.stepcounter.ui.stat.goToStat
 import org.koin.android.ext.android.inject
 import java.util.*
 
+
+
+fun goToMain(context: Context) {
+    val intent = createMainIntent(context)
+    context.startActivity(intent)
+}
+
+fun createMainIntent(context: Context): Intent {
+    return Intent(context, MainActivity::class.java)
+}
 
 class MainActivity : AppCompatActivity() {
 
