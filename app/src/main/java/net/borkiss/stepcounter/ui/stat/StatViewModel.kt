@@ -15,7 +15,7 @@ class StatViewModel(
 
     init {
         val factory = stepsRepository.getAllStepsPaged()
-        val pagedListBuilder = LivePagedListBuilder<Int, Steps>(factory, 2)
+        val pagedListBuilder = LivePagedListBuilder<Int, Steps>(factory, 10)
         stepsPaged = pagedListBuilder.build()
     }
 }

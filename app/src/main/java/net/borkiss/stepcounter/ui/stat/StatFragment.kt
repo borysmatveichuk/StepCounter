@@ -49,28 +49,4 @@ class StatFragment : Fragment() {
         })
     }
 
-//    @SuppressLint("SetTextI18n", "SimpleDateFormat")
-//    private fun setViewState(viewState: ViewState<List<Steps>>) {
-//        when (viewState) {
-//            is ViewState.Loading -> {
-//                results.text = "Loading..."
-//            }
-//            is ViewState.Data -> {
-//                val dateParser = SimpleDateFormat("dd.MM.yyyy")
-//                var allSteps = ""
-//                for (step in viewState.data) {
-//                    allSteps = "$allSteps${dateParser.format(step.date)} : ${step.count}\n"
-//                }
-//                results.text = if (allSteps.isEmpty()) {
-//                    "No data yet."
-//                } else {
-//                    allSteps
-//                }
-//            }
-//            is ViewState.Error -> {
-//                results.text = "Error: ${viewState.error.localizedMessage}"
-//            }
-//        }
-//    }
-
 }
