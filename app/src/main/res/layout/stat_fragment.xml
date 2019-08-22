@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.stat.StatFragment">
-
-    <!--<TextView-->
-            <!--android:id="@+id/results"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:textSize="20sp"-->
-            <!--android:textColor="@color/colorPrimaryDark"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:padding="16dp"-->
-            <!--android:lineSpacingExtra="8dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--tools:text="2019-03-05 : 10000\n2019-03-06 : 10000\n2019-03-07 : 10000\n"/>-->
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content"

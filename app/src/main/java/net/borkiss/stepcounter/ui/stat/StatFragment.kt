@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
+import kotlinx.android.synthetic.main.stat_fragment.*
 import net.borkiss.stepcounter.R
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,9 +22,6 @@ class StatFragment : Fragment() {
 
     private val viewModel by viewModel<StatViewModel>()
 
-    private lateinit var content: RecyclerView
-    private lateinit var adapter: StatPagedAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,19 +31,13 @@ class StatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        content = view.findViewById(R.id.content)
-        adapter = StatPagedAdapter()
+        val adapter = StatPagedAdapter()
         content.adapter = adapter
         content.layoutManager = LinearLayoutManager(context!!)
         content.addItemDecoration(DividerItemDecoration(context, VERTICAL))
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        viewModel.stepsPaged.observe(this, Observer {
+        viewModel.stepsPaged.observe(viewLifecycleOwner, Observer {
             adapter.submitList(it)
         })
     }
-
 }
