@@ -16,16 +16,15 @@ class StatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_stat)
+        setContentView(R.layout.activity_main)
 
         val toolbar = supportActionBar
         toolbar?.setDisplayHomeAsUpEnabled(true)
         toolbar?.title = getString(R.string.Statistics)
 
-        val container = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (container == null) {
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, StatFragment.newInstance())
+                .add(R.id.fragmentContainer, StatFragment.newInstance())
                 .commit()
         }
     }
