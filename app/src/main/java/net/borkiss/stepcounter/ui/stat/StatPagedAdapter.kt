@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_steps.view.*
+import kotlinx.android.extensions.LayoutContainer
+import kotlinx.android.synthetic.main.item_steps.*
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.entity.Steps
 import java.text.SimpleDateFormat
@@ -26,13 +27,13 @@ class StatPagedAdapter:  PagedListAdapter<Steps, StatPagedAdapter.StepsViewHolde
         }
     }
 
-    class StepsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class StepsViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer {
         @SuppressLint("SimpleDateFormat")
         private val dateParser = SimpleDateFormat("dd.MM.yyyy")
 
         fun bind(steps: Steps) {
-            itemView.date.text = dateParser.format(steps.date)
-            itemView.count.text = steps.count.toString()
+            date.text = dateParser.format(steps.date)
+            count.text = steps.count.toString()
         }
     }
 }
