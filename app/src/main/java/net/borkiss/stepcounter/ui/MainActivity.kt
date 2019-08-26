@@ -15,12 +15,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_stat)
+        setContentView(R.layout.activity_main)
 
-        val container = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (container == null) {
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, MainFragment.newInstance())
+                .add(R.id.fragmentContainer, MainFragment.newInstance())
                 .commit()
         }
     }
