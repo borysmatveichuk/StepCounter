@@ -26,6 +26,15 @@ android {
             storeFile file("debug.keystore")
         }
     }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 androidExtensions {
@@ -44,13 +53,17 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
-    def room_version = '2.2.0-alpha02'
+    def room_version = '2.2.0-beta01'
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
 
     def paging_version = "2.1.0"
     implementation "androidx.paging:paging-runtime:$paging_version"
+
+    def nav_version = "2.2.0-alpha01"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
