@@ -9,20 +9,16 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.main_fragment.*
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.ext.hasStepDetector
 import net.borkiss.stepcounter.service.ERRORS_MESSAGES
 import net.borkiss.stepcounter.service.ERROR_NO_STEP_DETECTOR
 import net.borkiss.stepcounter.service.StepCountService
-import net.borkiss.stepcounter.ui.stat.goToStat
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
 
     private val viewModel by viewModel<MainViewModel>()
 
@@ -56,7 +52,7 @@ class MainFragment : Fragment() {
         }
 
         statButton.setOnClickListener {
-            goToStat(context!!)
+            findNavController().navigate(R.id.action_mainFragment_to_statFragment)
         }
 
         viewModel.steps.observe(viewLifecycleOwner, Observer{

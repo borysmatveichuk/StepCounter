@@ -16,10 +16,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class StatFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = StatFragment()
-    }
-
     private val viewModel by viewModel<StatViewModel>()
 
     override fun onCreateView(
@@ -31,6 +27,7 @@ class StatFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val adapter = StatPagedAdapter()
         content.adapter = adapter
         content.layoutManager = LinearLayoutManager(context!!)
