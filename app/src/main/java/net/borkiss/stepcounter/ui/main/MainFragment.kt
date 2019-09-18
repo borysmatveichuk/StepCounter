@@ -3,9 +3,7 @@ package net.borkiss.stepcounter.ui.main
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,19 +13,13 @@ import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.ext.hasStepDetector
 import net.borkiss.stepcounter.service.ERRORS_MESSAGES
 import net.borkiss.stepcounter.service.ERROR_NO_STEP_DETECTOR
+import net.borkiss.stepcounter.service.METERS_PER_STEP
 import net.borkiss.stepcounter.service.StepCountService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(R.layout.main_fragment) {
 
     private val viewModel by viewModel<MainViewModel>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.main_fragment, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,11 +53,11 @@ class MainFragment : Fragment() {
     }
 
     private fun setSteps(steps: Long) {
-        stepsCount.text = getString(R.string.Steps, steps, getDistanceRun(steps))
+        stepsCount.text = getString(R.string.Steps, steps, getDistanceInKm(steps))
     }
 
-    private fun getDistanceRun(steps: Long): Float {
-        return (steps * 0.78).toFloat() / 1000.toFloat()
+    private fun getDistanceInKm(steps: Long): Float {
+        return (steps * METERS_PER_STEP) / 1000f
     }
 
     private fun showError(errorCode: Int) {
