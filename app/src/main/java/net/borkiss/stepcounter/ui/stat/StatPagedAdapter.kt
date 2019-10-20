@@ -21,9 +21,8 @@ class StatPagedAdapter:  PagedListAdapter<Steps, StatPagedAdapter.StepsViewHolde
     }
 
     override fun onBindViewHolder(holder: StepsViewHolder, position: Int) {
-        val item = getItem(position)
-        if (item != null) {
-            holder.bind(item)
+        getItem(position)?.let{
+            holder.bind(it)
         }
     }
 
