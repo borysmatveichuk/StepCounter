@@ -9,20 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.AttrRes
-import androidx.compose.Composable
-import androidx.compose.Context
-import androidx.compose.unaryPlus
+import androidx.compose.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.ui.core.Text
 import androidx.ui.core.dp
 import androidx.ui.core.setContent
 import androidx.ui.graphics.Color
-import androidx.ui.layout.Center
-import androidx.ui.layout.Column
-import androidx.ui.layout.FlexColumn
-import androidx.ui.layout.Padding
+import androidx.ui.layout.*
 import androidx.ui.material.Button
 import androidx.ui.material.MaterialColors
 import androidx.ui.material.MaterialTheme
@@ -40,6 +36,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainFragment : Fragment() {
 
     private val viewModel by viewModel<MainViewModel>()
+    private val state = StepCounterState()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,7 +46,7 @@ class MainFragment : Fragment() {
         val fragmentView = inflater.inflate(R.layout.main_fragment_empty, container, false)
 
         (fragmentView as ViewGroup).setContent {
-            composableContent()
+            composableContent(state)
         }
         return fragmentView
     }
@@ -58,7 +55,8 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.steps.observe(viewLifecycleOwner, Observer {
-            setSteps(it)
+            //setSteps(it)
+            state.updateSteps(it)
         })
     }
 
@@ -90,8 +88,16 @@ class MainFragment : Fragment() {
         return typedValue
     }
 
+
+    @Model
+    class StepCounterState(var steps: Long = 0) {
+        fun updateSteps(value: Long) {
+            steps = value
+        }
+    }
+
     @Composable
-    fun composableContent() = MaterialTheme(
+    fun composableContent(state: StepCounterState) = MaterialTheme(
         colors = MaterialColors(
             primary = resolveColor(context, R.attr.colorPrimary, MaterialColors().primary),
             secondary = resolveColor(context, R.attr.colorSecondary, MaterialColors().secondary)
@@ -102,57 +108,58 @@ class MainFragment : Fragment() {
             FlexColumn {
                 expanded(1F) {
                     Column {
+                        HeightSpacer(100.dp)
                         Center {
-                            Padding(top = 100.dp) {
-                                Button(
-                                    text = getString(R.string.Start),
-                                    onClick = {
-                                        context?.let {
-                                            if (it.hasStepDetector().not()) {
-                                                showError(ERROR_NO_STEP_DETECTOR)
-                                                return@Button
-                                            }
+                            Button(
+                                text = getString(R.string.Start),
+                                onClick = {
+                                    context?.let {
+                                        if (it.hasStepDetector().not()) {
+                                            showError(ERROR_NO_STEP_DETECTOR)
+                                            return@Button
+                                        }
 
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                                context?.startForegroundService(intent)
-                                            } else {
-                                                context?.startService(intent)
-                                            }
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                            context?.startForegroundService(intent)
+                                        } else {
+                                            context?.startService(intent)
                                         }
                                     }
-                                )
-                            }
-                        }
-                        Center {
-                            Padding(top = 16.dp) {
-                                Button(
-                                    text = getString(R.string.Stop),
-                                    onClick = {
-                                        context?.stopService(intent)
-                                    }
-                                )
-                            }
-                        }
-                        Padding(top = 16.dp) {
-                            Center {
-                                Button(
-                                    text = getString(R.string.Stat),
-                                    onClick = {
-                                        findNavController().navigate(R.id.action_mainFragment_to_statFragment)
-                                    }
-                                )
-                            }
-                        }
-                        Padding(top = 16.dp) {
-                            Center {
-                                Text {
-                                    getString(R.string.Steps, 0, getDistanceInKm(0))
                                 }
-                            }
+                            )
                         }
+                        HeightSpacer(16.dp)
+                        Center {
+                            Button(
+                                text = getString(R.string.Stop),
+                                onClick = {
+                                    context?.stopService(intent)
+                                }
+                            )
+                        }
+                        HeightSpacer(16.dp)
+                        Center {
+                            Button(
+                                text = getString(R.string.Stat),
+                                onClick = {
+                                    findNavController().navigate(R.id.action_mainFragment_to_statFragment)
+                                }
+                            )
+                        }
+                        HeightSpacer(16.dp)
+                        showSteps(state)
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    fun showSteps(state: StepCounterState) {
+        Center {
+            Text(
+                text = getString(R.string.Steps, state.steps, getDistanceInKm(state.steps))
+            )
         }
     }
 }
