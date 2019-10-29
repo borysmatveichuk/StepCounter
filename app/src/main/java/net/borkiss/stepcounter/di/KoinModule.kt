@@ -1,5 +1,6 @@
 package net.borkiss.stepcounter.di
 
+import kotlinx.coroutines.InternalCoroutinesApi
 import net.borkiss.stepcounter.db.createDb
 import net.borkiss.stepcounter.db.getStepsDao
 import net.borkiss.stepcounter.db.repository.StepsRepository
@@ -15,6 +16,7 @@ val dbModule = module {
     single<StepsRepository> { StepsRepositoryImpl(stepsDao = get()) }
 }
 
+@UseExperimental(InternalCoroutinesApi::class)
 val viewModelsModule = module {
     viewModel { StatViewModel(stepsRepository = get()) }
     viewModel { MainViewModel(stepsRepository = get()) }

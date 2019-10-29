@@ -17,6 +17,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.graphics.drawable.toBitmap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.entity.Steps
 import net.borkiss.stepcounter.db.repository.StepsRepository
@@ -35,6 +39,9 @@ class StepCountService : Service() {
     private var currentDay: Int = DateTime.now().dayOfYear
 
     private val stepsRepository: StepsRepository by inject()
+
+    private val job = Job()
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + job)
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -57,7 +64,9 @@ class StepCountService : Service() {
     @SuppressLint("CheckResult")
     private fun saveSteps(timeInMillis: Long, steps: Long) {
         val step = Steps(Date(timeInMillis), steps.toInt())
-        stepsRepository.addSteps(step).subscribe()
+        coroutineScope.launch {
+            stepsRepository.addSteps(step)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -105,22 +114,18 @@ class StepCountService : Service() {
 
     @SuppressLint("CheckResult")
     private fun initSteps() {
-        stepsRepository.getStepsByDate(Date())
-            .map {
-                it.count.toLong()
+        coroutineScope.launch {
+            stepsRepository.getStepsByDate(Date()).let {
+                steps = it.count.toLong()
             }
-            .subscribe({
-                steps = it
-                Log.d(TAG, "Steps for ${Date()} $steps")
-            }, {
-                Log.d(TAG, "No data yet for ${Date()}")
-            })
+        }
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
         sensorManager?.unregisterListener(sensorEventListener)
+        job.cancel()
         Toast.makeText(this, R.string.CounterStopped, Toast.LENGTH_SHORT).show()
     }
 

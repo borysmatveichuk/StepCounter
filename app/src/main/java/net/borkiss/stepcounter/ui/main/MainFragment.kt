@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.coroutines.InternalCoroutinesApi
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.ext.hasStepDetector
 import net.borkiss.stepcounter.service.ERRORS_MESSAGES
@@ -19,8 +20,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainFragment : Fragment(R.layout.main_fragment) {
 
+    @UseExperimental(InternalCoroutinesApi::class)
     private val viewModel by viewModel<MainViewModel>()
 
+    @UseExperimental(InternalCoroutinesApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
