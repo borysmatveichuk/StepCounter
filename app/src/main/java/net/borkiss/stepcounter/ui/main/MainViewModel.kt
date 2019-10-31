@@ -21,7 +21,7 @@ class MainViewModel(
         viewModelScope.launch {
             stepsRepository.getStepsByDateFlow(Date())
                 .map {
-                    it.count.toLong()
+                    it?.count?.toLong() ?: 0
                 }.collect { steps ->
                     setSteps(steps)
                 }

@@ -18,12 +18,11 @@ import net.borkiss.stepcounter.service.METERS_PER_STEP
 import net.borkiss.stepcounter.service.StepCountService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@UseExperimental(InternalCoroutinesApi::class)
 class MainFragment : Fragment(R.layout.main_fragment) {
 
-    @UseExperimental(InternalCoroutinesApi::class)
     private val viewModel by viewModel<MainViewModel>()
 
-    @UseExperimental(InternalCoroutinesApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

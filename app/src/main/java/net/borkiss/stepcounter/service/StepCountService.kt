@@ -116,7 +116,7 @@ class StepCountService : Service() {
     private fun initSteps() {
         coroutineScope.launch {
             stepsRepository.getStepsByDate(Date()).let {
-                steps = it.count.toLong()
+                steps = it?.count?.toLong() ?: 0
             }
         }
     }
