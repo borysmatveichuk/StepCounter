@@ -1,5 +1,6 @@
 package net.borkiss.stepcounter.ext
 
+import android.app.NotificationManager
 import android.content.Context
 
 fun Context.hasStepDetector(): Boolean {
@@ -12,3 +13,6 @@ fun Context.hasStepDetector(): Boolean {
     }
     return true
 }
+
+fun Context.getNotificationManager() =
+    (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)

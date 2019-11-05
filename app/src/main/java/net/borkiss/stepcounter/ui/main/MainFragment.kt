@@ -11,10 +11,10 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.coroutines.InternalCoroutinesApi
 import net.borkiss.stepcounter.R
+import net.borkiss.stepcounter.ext.getDistanceInKm
 import net.borkiss.stepcounter.ext.hasStepDetector
 import net.borkiss.stepcounter.service.ERRORS_MESSAGES
 import net.borkiss.stepcounter.service.ERROR_NO_STEP_DETECTOR
-import net.borkiss.stepcounter.service.METERS_PER_STEP
 import net.borkiss.stepcounter.service.StepCountService
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -56,10 +56,6 @@ class MainFragment : Fragment(R.layout.main_fragment) {
 
     private fun setSteps(steps: Long) {
         stepsCount.text = getString(R.string.Steps, steps, getDistanceInKm(steps))
-    }
-
-    private fun getDistanceInKm(steps: Long): Float {
-        return (steps * METERS_PER_STEP) / 1000f
     }
 
     private fun showError(errorCode: Int) {

@@ -24,6 +24,8 @@ import kotlinx.coroutines.launch
 import net.borkiss.stepcounter.R
 import net.borkiss.stepcounter.db.entity.Steps
 import net.borkiss.stepcounter.db.repository.StepsRepository
+import net.borkiss.stepcounter.ext.getDistanceInKm
+import net.borkiss.stepcounter.ext.getNotificationManager
 import net.borkiss.stepcounter.ui.createMainIntent
 import org.joda.time.DateTime
 import org.koin.android.ext.android.inject
@@ -33,6 +35,8 @@ import java.util.*
 class StepCountService : Service() {
     private val TAG = StepCountService::class.java.simpleName
 
+    @Suppress("PrivatePropertyName")
+    private val NOTIFICATION_ID = 1
     private var sensorManager: SensorManager? = null
     private var stepSensor: Sensor? = null
     private var steps: Long = 0
@@ -42,6 +46,8 @@ class StepCountService : Service() {
 
     private val job = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + job)
+
+    private var notificationBuilder: NotificationCompat.Builder? = null
 
     private val sensorEventListener: SensorEventListener = object : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -57,7 +63,20 @@ class StepCountService : Service() {
                 steps++
                 Log.d(TAG, "TYPE_STEP_DETECTOR ${Date(timeInMillis)} ${event.values[0]}")
                 saveSteps(timeInMillis, steps)
+                notifySteps(steps)
             }
+        }
+    }
+
+    private fun notifySteps(steps: Long) {
+        notificationBuilder?.let {
+            it.setContentText(
+                getString(R.string.Steps, steps, getDistanceInKm(steps))
+            )
+            getNotificationManager().notify(
+                NOTIFICATION_ID,
+                it.build()
+            )
         }
     }
 
@@ -84,12 +103,12 @@ class StepCountService : Service() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
+            getNotificationManager().createNotificationChannel(channel)
 
-            val notification = NotificationCompat.Builder(this, channelId)
+            notificationBuilder = NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_walk)
                 .setLargeIcon(getDrawable(R.drawable.ic_good_mood)?.toBitmap())
-                .setContentTitle(getString(R.string.app_name))
+                //.setContentTitle(getString(R.string.app_name))
                 .setContentIntent(
                     PendingIntent.getActivity(
                         this,
@@ -98,9 +117,8 @@ class StepCountService : Service() {
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
                 )
-                .build()
 
-            startForeground(1, notification)
+            startForeground(NOTIFICATION_ID, notificationBuilder?.build())
         }
 
         initSteps()
@@ -117,6 +135,7 @@ class StepCountService : Service() {
         coroutineScope.launch {
             stepsRepository.getStepsByDate(Date()).let {
                 steps = it?.count?.toLong() ?: 0
+                notifySteps(steps)
             }
         }
     }
