@@ -100,7 +100,7 @@ class StepCountService : Service() {
             val channel = NotificationChannel(
                 channelId,
                 getString(R.string.Notifications),
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             )
 
             getNotificationManager().createNotificationChannel(channel)
@@ -109,6 +109,8 @@ class StepCountService : Service() {
                 .setSmallIcon(R.drawable.ic_walk)
                 .setLargeIcon(getDrawable(R.drawable.ic_good_mood)?.toBitmap())
                 //.setContentTitle(getString(R.string.app_name))
+                .setContentTitle(getString(R.string.app_name))
+                .setSound(null)
                 .setContentIntent(
                     PendingIntent.getActivity(
                         this,
@@ -130,7 +132,7 @@ class StepCountService : Service() {
         Toast.makeText(this, R.string.CounterStarted, Toast.LENGTH_SHORT).show()
     }
 
-    @SuppressLint("CheckResult")
+    //@SuppressLint("CheckResult")
     private fun initSteps() {
         coroutineScope.launch {
             stepsRepository.getStepsByDate(Date()).let {
@@ -157,6 +159,7 @@ class StepCountService : Service() {
         if (newDay != currentDay) {
             currentDay = newDay
             steps = 0
+            notifySteps(steps)
         }
     }
 }
